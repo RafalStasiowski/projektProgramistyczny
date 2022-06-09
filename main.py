@@ -1,26 +1,59 @@
-import flask
-from flask import Flask, render_template, Blueprint
+import os
+
 import cv2
-from anonymize_face import anonymize_face_pixelate
-from anonymize_face import anonymize_face_simple
+from flask import Flask, flash, request, redirect, url_for, render_template
+from werkzeug.utils import secure_filename
+
 from find_face import find_face
 
 app = Flask(__name__)
-mod = Blueprint('', __name__)
+
+UPLOAD_FOLDER = 'static/uploads/'
+
+app.secret_key = "secret key"
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 
-@app.route('/', methods=['GET'])
-def new_checkout():
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route('/')
+def home():
     return render_template('index.html')
 
 
-@app.route('/image-upload/', methods=['GET', 'POST'])
-def upload():
-    imagefile = flask.request.files.get('imagefile', '')
-    imagefile = cv2.imread('human.jpg')
-    image = find_face(imagefile)
-    return flask.send_file(image, as_attachment=True, mimetype='image/jpg', download_name='aaa')
+@app.route('/', methods=['POST'])
+def upload_image():
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
+    if file.filename == '':
+        flash('No image selected for uploading')
+        return redirect(request.url)
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        directory = 'static/uploads/'+filename
+        img = cv2.imread(directory)
+        img = find_face(img)
+        cv2.imwrite(directory, img)
+        flash('Image successfully uploaded and displayed below')
+        return render_template('index.html', filename=filename)
+    else:
+        flash('Allowed image types are - png, jpg, jpeg, gif')
+        return redirect(request.url)
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=105)
+@app.route('/display/<filename>')
+def display_image(filename):
+    # print('display_image filename: ' + filename)
+    return redirect(url_for('static', filename='uploads/' + filename), code=301)
+
+
+if __name__ == "__main__":
+    app.run()

@@ -14,7 +14,7 @@ def find_face(image):
     (h, w) = image.shape[:2]
 
     net = cv2.dnn.readNet(prototxtPath, weightsPath)
-    blob = cv2.dnn.blobFromImage(image, 1.0, (1024, 1024),
+    blob = cv2.dnn.blobFromImage(image, 1.0, (1024, 768),
                                  (104.0, 177.0, 123.0))
     net.setInput(blob)
     detections = net.forward()
@@ -27,7 +27,7 @@ def find_face(image):
 
             face = image[startY:endY, startX:endX]
 
-            face = anonymize_face_pixelate(face, blocks=3)
+            face = anonymize_face_pixelate(face, blocks=4)
 
             image[startY:endY, startX:endX] = face
 
