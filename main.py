@@ -1,7 +1,10 @@
 import os
 
 import cv2
-from flask import Flask, flash, request, redirect, url_for, render_template
+import io
+from base64 import encodebytes
+from PIL import Image
+from flask import Flask, flash, request, redirect, url_for, render_template, jsonify
 from werkzeug.utils import secure_filename
 
 from find_face import find_face
@@ -38,7 +41,7 @@ def upload_image():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        directory = 'static/uploads/'+filename
+        directory = 'static/uploads/' + filename
         img = cv2.imread(directory)
         img = find_face(img)
         cv2.imwrite(directory, img)
@@ -51,8 +54,19 @@ def upload_image():
 
 @app.route('/display/<filename>')
 def display_image(filename):
-    # print('display_image filename: ' + filename)
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
+
+
+@app.route('/download/<filename>')
+def download_image(filename):
+    image_path = 'static/uploads/' + filename
+    pil_img = Image.open(image_path, mode='r')
+    byte_arr = io.BytesIO()
+    pil_img.save(byte_arr, format='PNG')
+    encoded_img = encodebytes(byte_arr.getvalue()).decode('ascii')
+    my_message = 'here is my message'
+    message = {'Status': 'Success', 'message': my_message, 'ImageBytes': encoded_img}
+    return jsonify(message), 200
 
 
 if __name__ == "__main__":

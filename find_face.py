@@ -8,8 +8,6 @@ def find_face(image):
     prototxtPath = "face_detector/deploy.prototxt"
     weightsPath = "face_detector/res10_300x300_ssd_iter_140000.caffemodel"
     confidence_in = 0.2
-    # prototxtPath = 'face_detector/aaa/graph.pbtxt'
-    # weightsPath = 'face_detector/aaa/frozen_inference_graph.pb'
 
     (h, w) = image.shape[:2]
 
@@ -27,7 +25,7 @@ def find_face(image):
 
             face = image[startY:endY, startX:endX]
 
-            face = anonymize_face_pixelate(face, blocks=4)
+            face = anonymize_face_pixelate(face, blocks=3)
 
             image[startY:endY, startX:endX] = face
 
