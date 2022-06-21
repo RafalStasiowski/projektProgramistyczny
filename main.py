@@ -8,9 +8,6 @@ from werkzeug.utils import secure_filename
 from flask_swagger_ui import get_swaggerui_blueprint
 from find_face import find_face
 
-
-
-
 app = Flask(__name__)
 
 SWAGGER_URL = '/docs'  # URL for exposing Swagger UI (without trailing '/')
@@ -26,7 +23,6 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 )
 
 app.register_blueprint(swaggerui_blueprint)
-
 
 UPLOAD_FOLDER = 'static/uploads/'
 
@@ -91,4 +87,4 @@ def download_image(filename):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=False)
