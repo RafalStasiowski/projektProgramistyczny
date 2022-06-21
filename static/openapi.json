@@ -1,0 +1,98 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "The project aims to blur the faces of people in the photo that will be sent.",
+    "version": "1.0.0",
+    "title": "Anonymizing face project"
+  },
+  "paths": {
+    "/post": {
+      "post": {
+        "tags": [
+          "post"
+        ],
+        "summary": "Send image for bluring",
+        "description": "Sends image to server and process it.",
+        "operationId": "upload_image",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "formData",
+            "type": "file",
+            "description": "Send image",
+            "required": true
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/display/{filename}": {
+      "get": {
+        "tags": [
+          "display"
+        ],
+        "summary": "Display blurred image",
+        "description": "Display blurred image with specific name",
+        "operationId": "display_image",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "description": "Name of the uploaded file",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/download/{filename}": {
+      "get": {
+        "tags": [
+          "download"
+        ],
+        "summary": "Download blurred image",
+        "description": "Display blurred image in json format",
+        "operationId": "download_image",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "description": "Name of the uploaded file",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "404": {
+            "description": "not found"
+          }
+        }
+      }
+    }
+  }
+}

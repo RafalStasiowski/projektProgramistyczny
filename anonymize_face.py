@@ -28,8 +28,8 @@ def anonymize_face_pixelate(image, blocks=3):
             endX = xSteps[j]
             endY = ySteps[i]
 
-            roi = image[startY:endY, startX:endX]
-            (B, G, R) = [int(x) for x in cv2.mean(roi)[:3]]
+            subImage = image[startY:endY, startX:endX]
+            (B, G, R) = [int(x) for x in cv2.mean(subImage)[:3]]
             cv2.rectangle(image, (startX, startY), (endX, endY),
                           (B, G, R), -1)
 

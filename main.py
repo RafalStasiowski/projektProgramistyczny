@@ -1,15 +1,32 @@
 import os
-
 import cv2
 import io
 from base64 import encodebytes
 from PIL import Image
 from flask import Flask, flash, request, redirect, url_for, render_template, jsonify
 from werkzeug.utils import secure_filename
-
+from flask_swagger_ui import get_swaggerui_blueprint
 from find_face import find_face
 
+
+
+
 app = Flask(__name__)
+
+SWAGGER_URL = '/docs'  # URL for exposing Swagger UI (without trailing '/')
+API_URL = '/static/openapi.json'  # Our API url (can of course be a local resource)
+
+# Call factory function to create our blueprint
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "Programming project"
+    },
+)
+
+app.register_blueprint(swaggerui_blueprint)
+
 
 UPLOAD_FOLDER = 'static/uploads/'
 
@@ -17,7 +34,7 @@ app.secret_key = "secret key"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 
 def allowed_file(filename):
@@ -29,7 +46,7 @@ def home():
     return render_template('index.html')
 
 
-@app.route('/', methods=['POST'])
+@app.route('/send', methods=['POST'])
 def upload_image():
     if 'file' not in request.files:
         flash('No file part')
@@ -52,13 +69,17 @@ def upload_image():
         return redirect(request.url)
 
 
-@app.route('/display/<filename>')
+@app.route('/display/<filename>', methods=['GET'])
 def display_image(filename):
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
 
-@app.route('/download/<filename>')
+@app.route('/download/<filename>', methods=['GET'])
 def download_image(filename):
+    if filename == '':
+        flash('No image selected for uploading')
+        return 404
+
     image_path = 'static/uploads/' + filename
     pil_img = Image.open(image_path, mode='r')
     byte_arr = io.BytesIO()

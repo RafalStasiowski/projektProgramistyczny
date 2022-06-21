@@ -25,7 +25,7 @@ def find_face(image):
 
             face = image[startY:endY, startX:endX]
 
-            face = anonymize_face_pixelate(face, blocks=3)
+            face = anonymize_face_pixelate(face, blocks=8)
 
             image[startY:endY, startX:endX] = face
 
