@@ -20,6 +20,6 @@ RUN apt-get -y update
 RUN apt-get update && apt-get install -y python3 python3-pip
 RUN pip3 install -r requirements.txt
 
-EXPOSE 5000
+EXPOSE 8000
 
 CMD gunicorn main:app
