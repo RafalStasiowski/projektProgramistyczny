@@ -10,9 +10,7 @@
 #ENV FLASK_APP='app.py'
 ##CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
 #EXPOSE 5000
-#CMD gunicorn main:app
 FROM python:3.8
-
 
 WORKDIR /
 
@@ -24,4 +22,4 @@ RUN pip3 install -r requirements.txt
 
 EXPOSE 5000
 
-CMD gunicorn -b :5000 --access-logfile - --error-logfile - wsgi:app
+CMD gunicorn main:app
