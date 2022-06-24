@@ -10,10 +10,10 @@ from find_face import find_face
 
 app = Flask(__name__)
 
-SWAGGER_URL = '/docs'  # URL for exposing Swagger UI (without trailing '/')
-API_URL = '/static/openapi.json'  # Our API url (can of course be a local resource)
+SWAGGER_URL = '/docs'
+API_URL = '/static/openapi.json'
 
-# Call factory function to create our blueprint
+
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL,
@@ -86,7 +86,5 @@ def download_image(filename):
     return jsonify(message), 200
 
 
-# port = int(os.environ.get("PORT", 8000))
-# app.run(host='0.0.0.0', port=port)
 if __name__ == '__main__':
     app.run(debug=True)
